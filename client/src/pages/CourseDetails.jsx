@@ -11,7 +11,7 @@ const CourseDetails = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        fetch(`http://localhost:5000/api/courses/${id}`)
+        fetch(`http://https://mindova-learning-application.onrender.com/api/courses/${id}`)
             .then(res => {
                 if (!res.ok) throw new Error('Course not found');
                 return res.json();
@@ -30,7 +30,7 @@ const CourseDetails = () => {
     const enroll = async () => {
         if (!user) return alert('Please login to enroll');
         try {
-            const res = await fetch(`http://localhost:5000/api/courses/${id}/enroll`, {
+            const res = await fetch(`http://https://mindova-learning-application.onrender.com/api/courses/${id}/enroll`, {
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',

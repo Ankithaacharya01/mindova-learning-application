@@ -11,7 +11,7 @@ const QuizView = ({ quizId, courseId, onComplete }) => {
     useEffect(() => {
         const fetchQuiz = async () => {
             try {
-                const res = await fetch(`http://localhost:5000/api/quizzes/${quizId}`);
+                const res = await fetch(`http://https://mindova-learning-application.onrender.com/api/quizzes/${quizId}`);
                 if (res.ok) {
                     const data = await res.json();
                     setQuiz(data);
@@ -49,7 +49,7 @@ const QuizView = ({ quizId, courseId, onComplete }) => {
         const calculatedScore = Math.round((correctCount / quiz.questions.length) * 100);
         
         try {
-            await fetch('http://localhost:5000/api/enrollments/quiz-score', {
+            await fetch('http://https://mindova-learning-application.onrender.com/api/enrollments/quiz-score', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
