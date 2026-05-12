@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { PlayCircle, CheckCircle, Lock, Clock } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import QuizView from '../components/QuizView';
 
 const LessonView = () => {
     const { user } = useAuth();
@@ -73,18 +74,28 @@ const LessonView = () => {
     return (
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: '2rem' }}>
             <div>
-                <div style={{ background: '#000', aspectRatio: '16/9', borderRadius: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '2rem' }}>
-                    <PlayCircle size={80} color="white" />
-                    <p style={{ color: 'white', marginLeft: '1rem' }}>Video Player Placeholder for {activeLesson.title}</p>
-                </div>
-                <h2>{activeLesson.title} {enrollment?.status === 'pending' && '(Pending)'}</h2>
-                <p style={{ color: 'var(--text-muted)', marginTop: '1rem' }}>{activeLesson.content || 'No description available.'}</p>
-                
-                {activeLesson.quizId && (
-                    <div style={{ marginTop: '2rem', padding: '1.5rem', background: 'var(--glass)', borderRadius: '1rem' }}>
-                        <h3>Ready for a Knowledge Check?</h3>
-                        <button onClick={() => setQuizStarted(true)} className="btn btn-primary mt-4">Take Quiz</button>
-                    </div>
+                {quizStarted && activeLesson.quizId ? (
+                    <QuizView 
+                        quizId={activeLesson.quizId} 
+                        courseId={courseId} 
+                        onComplete={() => setQuizStarted(false)} 
+                    />
+                ) : (
+                    <>
+                        <div style={{ background: '#000', aspectRatio: '16/9', borderRadius: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '2rem' }}>
+                            <PlayCircle size={80} color="white" />
+                            <p style={{ color: 'white', marginLeft: '1rem' }}>Video Player Placeholder for {activeLesson.title}</p>
+                        </div>
+                        <h2>{activeLesson.title} {enrollment?.status === 'pending' && '(Pending)'}</h2>
+                        <p style={{ color: 'var(--text-muted)', marginTop: '1rem' }}>{activeLesson.content || 'No description available.'}</p>
+                        
+                        {activeLesson.quizId && (
+                            <div style={{ marginTop: '2rem', padding: '1.5rem', background: 'var(--glass)', borderRadius: '1rem' }}>
+                                <h3>Ready for a Knowledge Check?</h3>
+                                <button onClick={() => setQuizStarted(true)} className="btn btn-primary mt-4">Take Quiz</button>
+                            </div>
+                        )}
+                    </>
                 )}
             </div>
 
@@ -94,7 +105,10 @@ const LessonView = () => {
                     {course.lessons.map((lesson, index) => (
                         <div 
                             key={lesson._id} 
-                            onClick={() => setActiveLesson(lesson)}
+                            onClick={() => {
+                                setActiveLesson(lesson);
+                                setQuizStarted(false);
+                            }}
                             style={{ 
                                 padding: '1rem', 
                                 borderRadius: '0.5rem', 
