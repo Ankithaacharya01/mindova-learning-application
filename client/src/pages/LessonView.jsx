@@ -11,13 +11,15 @@ const LessonView = () => {
     const [enrollment, setEnrollment] = useState(null);
     const [activeLesson, setActiveLesson] = useState(null);
     const [quizStarted, setQuizStarted] = useState(false);
+    const [courseQuiz, setCourseQuiz] = useState(null);
+    const [takingCourseQuiz, setTakingCourseQuiz] = useState(false);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
                 // Fetch course details
-                const courseRes = await fetch(`http://https://mindova-learning-application.onrender.com/api/courses/${courseId}`);
+                const courseRes = await fetch(`http://localhost:5000/api/courses/${courseId}`);
                 const courseData = await courseRes.json();
                 setCourse(courseData);
                 
@@ -29,13 +31,24 @@ const LessonView = () => {
 
                 // Fetch enrollment status if student
                 if (user && user.role === 'student') {
-                    const enrollRes = await fetch(`http://https://mindova-learning-application.onrender.com/api/enrollments/course/${courseId}`, {
+                    const enrollRes = await fetch(`http://localhost:5000/api/enrollments/course/${courseId}`, {
                         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
                     });
                     if (enrollRes.ok) {
                         const enrollData = await enrollRes.json();
                         setEnrollment(enrollData);
                     }
+                }
+
+                // Fetch course quiz if exists
+                try {
+                    const cQuizRes = await fetch(`http://localhost:5000/api/quizzes/course/${courseId}`);
+                    if (cQuizRes.ok) {
+                        const cQuizData = await cQuizRes.json();
+                        setCourseQuiz(cQuizData);
+                    }
+                } catch (e) {
+                    console.error("No course quiz found");
                 }
             } catch (err) {
                 console.error(err);
@@ -74,7 +87,13 @@ const LessonView = () => {
     return (
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: '2rem' }}>
             <div>
-                {quizStarted && activeLesson.quizId ? (
+                {takingCourseQuiz && courseQuiz ? (
+                    <QuizView 
+                        quizId={courseQuiz._id} 
+                        courseId={courseId} 
+                        onComplete={() => setTakingCourseQuiz(false)} 
+                    />
+                ) : quizStarted && activeLesson?.quizId ? (
                     <QuizView 
                         quizId={activeLesson.quizId} 
                         courseId={courseId} 
@@ -108,6 +127,7 @@ const LessonView = () => {
                             onClick={() => {
                                 setActiveLesson(lesson);
                                 setQuizStarted(false);
+                                setTakingCourseQuiz(false);
                             }}
                             style={{ 
                                 padding: '1rem', 
@@ -125,6 +145,21 @@ const LessonView = () => {
                         </div>
                     ))}
                 </div>
+                
+                {courseQuiz && (
+                    <div style={{ marginTop: '2rem', borderTop: '1px solid var(--border)', paddingTop: '1.5rem' }}>
+                        <button 
+                            onClick={() => {
+                                setTakingCourseQuiz(true);
+                                setQuizStarted(false);
+                            }} 
+                            className="btn btn-primary" 
+                            style={{ width: '100%', background: '#818cf8', color: 'white', fontWeight: 'bold' }}
+                        >
+                            Take Final Course Quiz
+                        </button>
+                    </div>
+                )}
             </div>
         </div>
     );

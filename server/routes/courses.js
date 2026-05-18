@@ -35,7 +35,7 @@ router.post('/', auth(['instructor', 'admin']), async (req, res) => {
     }
 });
 
-// Enroll in a course (Improved with Enrollment model)
+// Enroll in a course (with payment handling)
 router.post('/:id/enroll', auth(['student']), async (req, res) => {
     try {
         const course = await Course.findById(req.params.id);
@@ -47,14 +47,24 @@ router.post('/:id/enroll', auth(['student']), async (req, res) => {
             return res.status(400).json({ error: 'Already enrolled' });
         }
         
-        // Create new enrollment (defaults to pending)
+        // Create new enrollment
         enrollment = new Enrollment({
             studentId: req.user.id,
-            courseId: course._id
+            courseId: course._id,
+            status: req.body.paymentSuccess ? 'approved' : 'pending' // Auto approve if payment succeeded
         });
         await enrollment.save();
 
-        res.json({ message: 'Enrollment requested. Waiting for admin approval.', enrollment });
+        if (req.body.paymentSuccess) {
+            // Update legacy arrays
+            await User.findByIdAndUpdate(req.user.id, { $addToSet: { enrolledCourses: course._id } });
+            await Course.findByIdAndUpdate(course._id, { $addToSet: { studentsEnrolled: req.user.id } });
+        }
+
+        res.json({ 
+            message: req.body.paymentSuccess ? 'Payment successful! Enrollment approved.' : 'Enrollment requested. Waiting for admin approval.', 
+            enrollment 
+        });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }

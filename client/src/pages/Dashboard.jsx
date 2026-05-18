@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Plus, Play, Check, X, Clock, Award, Download } from 'lucide-react';
+import { Plus, Play, Check, X, Clock, Award, Download, HelpCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
@@ -20,7 +20,7 @@ const Dashboard = () => {
             else if (user.role === 'instructor') endpoint = '/api/dashboards/instructor';
             else endpoint = '/api/dashboards/student';
 
-            fetch(`http://https://mindova-learning-application.onrender.com${endpoint}`, {
+            fetch(`http://localhost:5000${endpoint}`, {
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
             })
             .then(res => res.json())
@@ -47,7 +47,7 @@ const Dashboard = () => {
 
     const handleApproval = async (id, status) => {
         try {
-            const res = await fetch(`http://https://mindova-learning-application.onrender.com/api/enrollments/${id}/status`, {
+            const res = await fetch(`http://localhost:5000/api/enrollments/${id}/status`, {
                 method: 'PUT',
                 headers: { 
                     'Content-Type': 'application/json',
@@ -65,7 +65,7 @@ const Dashboard = () => {
 
     const handleUpdateProgress = async (id, progress) => {
         try {
-            const res = await fetch(`http://https://mindova-learning-application.onrender.com/api/enrollments/${id}/progress`, {
+            const res = await fetch(`http://localhost:5000/api/enrollments/${id}/progress`, {
                 method: 'PUT',
                 headers: { 
                     'Content-Type': 'application/json',
@@ -267,7 +267,7 @@ const Dashboard = () => {
                                             <h4>{course.title}</h4>
                                         </div>
                                         <button 
-                                            onClick={() => navigate(`/course/${course._id}/lesson/`)}
+                                            onClick={() => navigate(`/edit-course/${course._id}`)}
                                             className="btn mt-4" 
                                             style={{ 
                                                 background: 'var(--glass)', 
@@ -399,6 +399,17 @@ const Dashboard = () => {
                                                 >
                                                     <Play size={18} /> {isPending ? 'Awaiting Approval' : 'Continue Learning'}
                                                 </button>
+
+                                                {!isPending && (
+                                                    <button 
+                                                        onClick={() => navigate(`/course-quiz/${course._id}`)}
+                                                        className="btn"
+                                                        title="Take Course Quiz"
+                                                        style={{ background: '#818cf8', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 1rem' }}
+                                                    >
+                                                        <HelpCircle size={18} />
+                                                    </button>
+                                                )}
                                                 
                                                 {!isPending && item.progress === 100 && (
                                                     <button 

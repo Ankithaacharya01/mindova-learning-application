@@ -10,6 +10,8 @@ import CourseDetails from './pages/CourseDetails';
 import Dashboard from './pages/Dashboard';
 import LessonView from './pages/LessonView';
 import CreateCourse from './pages/CreateCourse';
+import EditCourse from './pages/EditCourse';
+import CourseQuizPage from './pages/CourseQuizPage';
 import Certificate from './pages/Certificate';
 
 function App() {
@@ -27,6 +29,8 @@ function App() {
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/course/:courseId/lesson/:lessonId?" element={<LessonView />} />
             <Route path="/create-course" element={<CreateCourse />} />
+            <Route path="/edit-course/:id" element={<EditCourse />} />
+            <Route path="/course-quiz/:courseId" element={<CourseQuizPage />} />
             <Route path="/certificate/:enrollmentId" element={<Certificate />} />
           </Routes>
         </main>

@@ -9,6 +9,7 @@ const QuestionSchema = new mongoose.Schema({
 const QuizSchema = new mongoose.Schema({
     title: { type: String, required: true },
     lessonId: { type: mongoose.Schema.Types.ObjectId, ref: 'Lesson' },
+    courseId: { type: mongoose.Schema.Types.ObjectId, ref: 'Course' },
     questions: [QuestionSchema]
 });
 

@@ -10,7 +10,7 @@ const Certificate = () => {
     useEffect(() => {
         const fetchCertificate = async () => {
             try {
-                const res = await fetch(`http://https://mindova-learning-application.onrender.com/api/enrollments/${enrollmentId}`, {
+                const res = await fetch(`http://localhost:5000/api/enrollments/${enrollmentId}`, {
                     headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
                 });
                 if (res.ok) {

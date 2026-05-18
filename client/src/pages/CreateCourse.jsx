@@ -8,7 +8,7 @@ const CreateCourse = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const res = await fetch('http://https://mindova-learning-application.onrender.com/api/courses', {
+            const res = await fetch('http://localhost:5000/api/courses', {
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',
