@@ -48,10 +48,9 @@ const CourseQuizPage = () => {
         <div style={{ maxWidth: '800px', margin: '0 auto', padding: '2rem 0' }}>
             <button onClick={() => navigate('/dashboard')} className="btn btn-outline" style={{ marginBottom: '2rem' }}>&larr; Back to Dashboard</button>
             <QuizView 
-                quizId={courseQuiz._id} 
-                courseId={courseId} 
-                onComplete={() => navigate('/dashboard')} 
-            />
+    quiz={courseQuiz}
+    onComplete={() => navigate('/dashboard')}
+/>
         </div>
     );
 };
