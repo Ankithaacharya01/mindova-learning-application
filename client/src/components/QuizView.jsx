@@ -1,29 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { CheckCircle, XCircle } from 'lucide-react';
 
-const QuizView = ({ quizId, courseId, onComplete }) => {
-    const [quiz, setQuiz] = useState(null);
+const QuizView = ({ quiz, onComplete }) => { 
+   
     const [answers, setAnswers] = useState({});
     const [score, setScore] = useState(null);
-    const [loading, setLoading] = useState(true);
+ 
     const [submitting, setSubmitting] = useState(false);
 
-    useEffect(() => {
-        const fetchQuiz = async () => {
-            try {
-                const res = await fetch(`https://mindova-learning-application-1.onrender.com/api/quizzes/${quizId}`);
-                if (res.ok) {
-                    const data = await res.json();
-                    setQuiz(data);
-                }
-            } catch (err) {
-                console.error("Failed to fetch quiz:", err);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchQuiz();
-    }, [quizId]);
+    
 
     const handleOptionSelect = (questionIndex, optionIndex) => {
         setAnswers(prev => ({
@@ -41,7 +26,7 @@ const QuizView = ({ quizId, courseId, onComplete }) => {
         setSubmitting(true);
         let correctCount = 0;
         quiz.questions.forEach((q, idx) => {
-            if (answers[idx] === q.correctOption) {
+            if (q.options[answers[idx]] === q.answer) {
                 correctCount++;
             }
         });
@@ -66,8 +51,7 @@ const QuizView = ({ quizId, courseId, onComplete }) => {
         }
     };
 
-    if (loading) return <div style={{ padding: '2rem', textAlign: 'center' }}>Loading Quiz...</div>;
-    if (!quiz) return <div style={{ padding: '2rem', textAlign: 'center' }}>Quiz not found.</div>;
+    
 
     if (score !== null) {
         return (
@@ -90,7 +74,7 @@ const QuizView = ({ quizId, courseId, onComplete }) => {
             
             {quiz.questions.map((q, qIdx) => (
                 <div key={qIdx} style={{ marginBottom: '2rem', paddingBottom: '1.5rem', borderBottom: qIdx < quiz.questions.length - 1 ? '1px solid var(--border)' : 'none' }}>
-                    <h3 style={{ marginBottom: '1rem', fontSize: '1.1rem' }}>{qIdx + 1}. {q.questionText}</h3>
+                    <h3 style={{ marginBottom: '1rem', fontSize: '1.1rem' }}>{qIdx + 1}. {q.question}</h3>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                         {q.options.map((opt, oIdx) => (
                             <label key={oIdx} style={{ 
