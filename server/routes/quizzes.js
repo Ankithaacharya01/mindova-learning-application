@@ -35,6 +35,7 @@ router.get('/course/:courseId', async (req, res) => {
         });
     }
 });
+
 // Get Quiz by ID
 router.get('/:id', async (req, res) => {
     try {
