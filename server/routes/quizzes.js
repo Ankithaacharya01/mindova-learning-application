@@ -2,18 +2,39 @@ const express = require('express');
 const router = express.Router();
 const Quiz = require('../models/Quiz');
 const auth = require('../middleware/auth');
-
+const Course = require('../models/Course');
 // Get Quiz by Course ID
+const Course = require('../models/Course');
+
 router.get('/course/:courseId', async (req, res) => {
     try {
-        const quiz = await Quiz.findOne({ courseId: req.params.courseId });
-        if (!quiz) return res.status(404).json({ error: 'Course quiz not found' });
+
+        const course = await Course.findById(req.params.courseId);
+
+        if (!course) {
+            return res.status(404).json({
+                error: 'Course not found'
+            });
+        }
+
+        const quiz = await Quiz.findOne({
+            courseTitle: course.title
+        });
+
+        if (!quiz) {
+            return res.status(404).json({
+                error: 'Course quiz not found'
+            });
+        }
+
         res.json(quiz);
+
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        res.status(500).json({
+            error: err.message
+        });
     }
 });
-
 // Get Quiz by ID
 router.get('/:id', async (req, res) => {
     try {
