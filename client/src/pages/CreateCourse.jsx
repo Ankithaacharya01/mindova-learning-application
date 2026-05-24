@@ -30,7 +30,7 @@ const CreateCourse = () => {
     return (
         <div style={{ maxWidth: '600px', margin: '0 auto' }}>
             <h2 style={{ marginBottom: '2rem' }}>Create New Course</h2>
-            <form onSubmit={handleSubmit} className="auth-card" style={{ maxWidth: '100%', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+            <form onSubmit={handleSubmit} className="card" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                     <label>Course Title</label>
                     <input 

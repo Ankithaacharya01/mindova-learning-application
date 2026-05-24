@@ -194,7 +194,7 @@ const EditCourse = () => {
         <div style={{ maxWidth: '900px', margin: '0 auto', padding: '2rem 0' }}>
             <button onClick={() => navigate('/dashboard')} className="btn btn-outline" style={{ marginBottom: '2rem' }}>&larr; Back to Dashboard</button>
             
-            <div className="auth-card" style={{ marginBottom: '2rem' }}>
+            <div className="card" style={{ marginBottom: '2rem' }}>
                 <h2>Editing: {course.title}</h2>
                 <p style={{ color: 'var(--text-muted)' }}>{course.description}</p>
                 
@@ -214,7 +214,7 @@ const EditCourse = () => {
                 </div>
             </div>
 
-            <div className="auth-card">
+            <div className="card">
                 <h3 style={{ marginBottom: '1.5rem', borderBottom: '1px solid var(--border)', paddingBottom: '1rem' }}>Add New Lesson</h3>
                 
                 <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
@@ -337,7 +337,7 @@ const EditCourse = () => {
                 </form>
             </div>
 
-            <div className="auth-card" style={{ marginTop: '2rem' }}>
+            <div className="card" style={{ marginTop: '2rem' }}>
                 <h3 style={{ marginBottom: '1.5rem', borderBottom: '1px solid var(--border)', paddingBottom: '1rem' }}>Add Course-Level Quiz</h3>
                 <p style={{ color: 'var(--text-muted)', marginBottom: '1.5rem' }}>This quiz will be tied to the entire course, independent of individual lessons.</p>
                 

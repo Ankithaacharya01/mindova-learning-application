@@ -133,26 +133,26 @@ const Dashboard = () => {
             {user.role === 'admin' ? (
                 <>
                     <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem', marginBottom: '3rem' }}>
-                        <div className="auth-card" style={{ padding: '1.5rem', textAlign: 'center' }}>
+                        <div className="card" style={{ padding: '1.5rem', textAlign: 'center' }}>
                             <h4 style={{ color: 'var(--text-muted)' }}>Total Users</h4>
                             <p style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--primary)' }}>{stats?.totalUsers || 0}</p>
                         </div>
-                        <div className="auth-card" style={{ padding: '1.5rem', textAlign: 'center' }}>
+                        <div className="card" style={{ padding: '1.5rem', textAlign: 'center' }}>
                             <h4 style={{ color: 'var(--text-muted)' }}>Total Courses</h4>
                             <p style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--primary)' }}>{stats?.totalCourses || 0}</p>
                         </div>
-                        <div className="auth-card" style={{ padding: '1.5rem', textAlign: 'center' }}>
+                        <div className="card" style={{ padding: '1.5rem', textAlign: 'center' }}>
                             <h4 style={{ color: 'var(--text-muted)' }}>Students</h4>
                             <p style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--primary)' }}>{stats?.totalStudents || 0}</p>
                         </div>
-                        <div className="auth-card" style={{ padding: '1.5rem', textAlign: 'center' }}>
+                        <div className="card" style={{ padding: '1.5rem', textAlign: 'center' }}>
                             <h4 style={{ color: 'var(--text-muted)' }}>Instructors</h4>
                             <p style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--primary)' }}>{stats?.totalInstructors || 0}</p>
                         </div>
                     </div>
 
                     <h3>Pending Enrollment Requests</h3>
-                    <div className="auth-card" style={{ marginTop: '1rem', padding: '1rem', overflowX: 'auto' }}>
+                    <div className="card" style={{ marginTop: '1rem', padding: '1rem', overflowX: 'auto' }}>
                         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                             <thead>
                                 <tr style={{ borderBottom: '1px solid var(--border)', textAlign: 'left' }}>
@@ -203,7 +203,7 @@ const Dashboard = () => {
                         </button>
                     </div>
                     
-                    <div className="auth-card" style={{ padding: '1rem', overflowX: 'auto', marginBottom: '3rem' }}>
+                    <div className="card" style={{ padding: '1rem', overflowX: 'auto', marginBottom: '3rem' }}>
                         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                             <thead>
                                 <tr style={{ borderBottom: '1px solid var(--border)', textAlign: 'left' }}>
@@ -295,7 +295,7 @@ const Dashboard = () => {
                     <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem' }}>
                         
                         {/* Profile Card */}
-                        <div className="auth-card" style={{ padding: '2rem', display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+                        <div className="card" style={{ padding: '2rem', display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
                             <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2rem', fontWeight: 'bold' }}>
                                 {user.name.charAt(0).toUpperCase()}
                             </div>
@@ -307,7 +307,7 @@ const Dashboard = () => {
                         </div>
 
                         {/* Progress Pie Chart Card */}
-                        <div className="auth-card" style={{ padding: '1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <div className="card" style={{ padding: '1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                             <div>
                                 <h4 style={{ color: 'var(--text-muted)', marginBottom: '0.5rem' }}>Overall Progress</h4>
                                 <div style={{ fontSize: '2.5rem', fontWeight: 800 }}>{Math.round(stats?.averageProgress || 0)}%</div>
