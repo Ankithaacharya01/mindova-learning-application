@@ -37,7 +37,7 @@ const EditCourse = () => {
 
     const fetchCourse = async () => {
         try {
-            const res = await fetch(`http://localhost:5000/api/courses/${id}`);
+            const res = await fetch(`https://mindova-learning-application-1.onrender.com/api/courses/${id}`);
             if (!res.ok) throw new Error('Course not found');
             const data = await res.json();
             setCourse(data);
@@ -102,7 +102,7 @@ const EditCourse = () => {
             };
 
             // 1. Create Lesson
-            const lessonRes = await fetch('http://localhost:5000/api/lessons', {
+            const lessonRes = await fetch('https://mindova-learning-application-1.onrender.com/api/lessons', {
                 method: 'POST',
                 headers,
                 body: JSON.stringify({
@@ -119,7 +119,7 @@ const EditCourse = () => {
 
             // 2. Create Quiz if selected
             if (includeQuiz) {
-                const quizRes = await fetch('http://localhost:5000/api/quizzes', {
+                const quizRes = await fetch('https://mindova-learning-application-1.onrender.com/api/quizzes', {
                     method: 'POST',
                     headers,
                     body: JSON.stringify({
@@ -133,7 +133,7 @@ const EditCourse = () => {
                 const quizData = await quizRes.json();
 
                 // 3. Link Quiz to Lesson
-                await fetch(`http://localhost:5000/api/lessons/${lessonData._id}`, {
+                await fetch(`https://mindova-learning-application-1.onrender.com/api/lessons/${lessonData._id}`, {
                     method: 'PUT',
                     headers,
                     body: JSON.stringify({ quizId: quizData._id })
@@ -163,7 +163,7 @@ const EditCourse = () => {
         setSubmittingCourseQuiz(true);
         try {
             const token = localStorage.getItem('token');
-            const res = await fetch('http://localhost:5000/api/quizzes', {
+            const res = await fetch('https://mindova-learning-application-1.onrender.com/api/quizzes', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

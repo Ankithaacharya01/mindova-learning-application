@@ -7,7 +7,7 @@ const CourseCatalog = () => {
     const { user } = useAuth();
 
     useEffect(() => {
-        fetch('http://localhost:5000/api/courses')
+        fetch('https://mindova-learning-application-1.onrender.com/api/courses')
             .then(res => res.json())
             .then(data => setCourses(data))
             .catch(err => console.error(err));
@@ -16,7 +16,7 @@ const CourseCatalog = () => {
     const enroll = async (courseId) => {
         if (!user) return alert('Please login to enroll');
         try {
-            const res = await fetch(`http://localhost:5000/api/courses/${courseId}/enroll`, {
+            const res = await fetch(`https://mindova-learning-application-1.onrender.com/api/courses/${courseId}/enroll`, {
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',

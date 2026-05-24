@@ -20,7 +20,7 @@ const Dashboard = () => {
             else if (user.role === 'instructor') endpoint = '/api/dashboards/instructor';
             else endpoint = '/api/dashboards/student';
 
-            fetch(`http://localhost:5000${endpoint}`, {
+            fetch(`https://mindova-learning-application-1.onrender.com${endpoint}`, {
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
             })
             .then(res => res.json())
@@ -47,7 +47,7 @@ const Dashboard = () => {
 
     const handleApproval = async (id, status) => {
         try {
-            const res = await fetch(`http://localhost:5000/api/enrollments/${id}/status`, {
+            const res = await fetch(`https://mindova-learning-application-1.onrender.com/api/enrollments/${id}/status`, {
                 method: 'PUT',
                 headers: { 
                     'Content-Type': 'application/json',
@@ -65,7 +65,7 @@ const Dashboard = () => {
 
     const handleUpdateProgress = async (id, progress) => {
         try {
-            const res = await fetch(`http://localhost:5000/api/enrollments/${id}/progress`, {
+            const res = await fetch(`https://mindova-learning-application-1.onrender.com/api/enrollments/${id}/progress`, {
                 method: 'PUT',
                 headers: { 
                     'Content-Type': 'application/json',

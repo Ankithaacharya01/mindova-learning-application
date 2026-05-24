@@ -21,7 +21,7 @@ const CourseDetails = () => {
     const [cvv, setCvv] = useState('');
 
     useEffect(() => {
-        fetch(`http://localhost:5000/api/courses/${id}`)
+        fetch(`https://mindova-learning-application-1.onrender.com/api/courses/${id}`)
             .then(res => {
                 if (!res.ok) throw new Error('Course not found');
                 return res.json();
@@ -37,7 +37,7 @@ const CourseDetails = () => {
             });
 
         // Fetch course quiz if exists
-        fetch(`http://localhost:5000/api/quizzes/course/${id}`)
+        fetch(`https://mindova-learning-application-1.onrender.com/api/quizzes/course/${id}`)
             .then(res => res.ok ? res.json() : null)
             .then(data => {
                 if (data) setCourseQuiz(data);
@@ -58,7 +58,7 @@ const CourseDetails = () => {
         await new Promise(resolve => setTimeout(resolve, 1500));
 
         try {
-            const res = await fetch(`http://localhost:5000/api/courses/${id}/enroll`, {
+            const res = await fetch(`https://mindova-learning-application-1.onrender.com/api/courses/${id}/enroll`, {
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',

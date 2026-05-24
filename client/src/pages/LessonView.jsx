@@ -19,7 +19,7 @@ const LessonView = () => {
         const fetchData = async () => {
             try {
                 // Fetch course details
-                const courseRes = await fetch(`http://localhost:5000/api/courses/${courseId}`);
+                const courseRes = await fetch(`https://mindova-learning-application-1.onrender.com/api/courses/${courseId}`);
                 const courseData = await courseRes.json();
                 setCourse(courseData);
                 
@@ -31,7 +31,7 @@ const LessonView = () => {
 
                 // Fetch enrollment status if student
                 if (user && user.role === 'student') {
-                    const enrollRes = await fetch(`http://localhost:5000/api/enrollments/course/${courseId}`, {
+                    const enrollRes = await fetch(`https://mindova-learning-application-1.onrender.com/api/enrollments/course/${courseId}`, {
                         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
                     });
                     if (enrollRes.ok) {
@@ -42,7 +42,7 @@ const LessonView = () => {
 
                 // Fetch course quiz if exists
                 try {
-                    const cQuizRes = await fetch(`http://localhost:5000/api/quizzes/course/${courseId}`);
+                    const cQuizRes = await fetch(`https://mindova-learning-application-1.onrender.com/api/quizzes/course/${courseId}`);
                     if (cQuizRes.ok) {
                         const cQuizData = await cQuizRes.json();
                         setCourseQuiz(cQuizData);
