@@ -14,7 +14,7 @@ const CourseQuizPage = () => {
     useEffect(() => {
         const fetchQuiz = async () => {
             try {
-                const res = await fetch(`https://mindova-learning-application-1.onrender.com/api/quizzes/course/${courseId}`);
+                const res = await fetch(`https://mindova-learning-application-1.onrender.com/api/quizzes/${courseId}`);
                 if (!res.ok) {
                     throw new Error('Course quiz not found or not created yet.');
                 }
