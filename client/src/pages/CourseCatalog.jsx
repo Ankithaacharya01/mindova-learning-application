@@ -40,7 +40,10 @@ const CourseCatalog = () => {
             <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))' }}>
                 {courses.map(course => (
                     <div key={course._id} className="course-card">
-                        <img src={course.thumbnail || 'https://via.placeholder.com/300x200?text=Course+Thumbnail'} alt={course.title} />
+                       <img 
+  src={course.image || 'https://via.placeholder.com/300x200?text=Course+Thumbnail'} 
+  alt={course.title} 
+/>
                         <div className="p-4">
                             <h3>{course.title}</h3>
                             <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', margin: '0.5rem 0' }}>{course.description}</p>
