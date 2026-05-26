@@ -63,7 +63,7 @@ const QuizView = ({ quiz: initialQuiz, quizId: propQuizId, courseId: propCourseI
         setSubmitting(true);
         let correctCount = 0;
         quiz.questions.forEach((q, idx) => {
-            if (answers[idx] === q.correctOption) {
+            if (q.options[answers[idx]] === q.answer) {
                 correctCount++;
             }
         });
@@ -112,11 +112,11 @@ const QuizView = ({ quiz: initialQuiz, quizId: propQuizId, courseId: propCourseI
 
     return (
         <div style={{ background: 'var(--card-bg)', padding: '2rem', borderRadius: '1rem', border: '1px solid var(--border)' }}>
-            <h2 style={{ marginBottom: '1.5rem', color: 'var(--primary)' }}>{quiz.title}</h2>
+            <h2 style={{ marginBottom: '1.5rem', color: 'var(--primary)' }}>{quiz.courseTitle}</h2>
             
             {quiz.questions.map((q, qIdx) => (
                 <div key={qIdx} style={{ marginBottom: '2rem', paddingBottom: '1.5rem', borderBottom: qIdx < quiz.questions.length - 1 ? '1px solid var(--border)' : 'none' }}>
-                    <h3 style={{ marginBottom: '1rem', fontSize: '1.1rem' }}>{qIdx + 1}. {q.questionText}</h3>
+                    <h3 style={{ marginBottom: '1rem', fontSize: '1.1rem' }}>{qIdx + 1}. {q.question}</h3>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                         {q.options.map((opt, oIdx) => (
                             <label key={oIdx} style={{ 
