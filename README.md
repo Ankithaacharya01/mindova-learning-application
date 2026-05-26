@@ -34,6 +34,8 @@ MongoDB Atlas
 Deployment
 Vercel (Frontend Hosting)
 Render (Backend Hosting)
+
+
 Project Structure
 Mindova-Learning-Application/
 │
@@ -44,25 +46,28 @@ Mindova-Learning-Application/
 ├── controllers/   # Backend Controllers
 ├── middleware/    # Authentication Middleware
 └── README.md
+
+
 Installation and Setup
 Clone the Repository
 git clone https://github.com/your-username/mindova-learning-application.git
 Navigate to Project Folder
+
 cd mindova-learning-application
+
 Frontend Setup
 cd client
 npm install
 npm run dev
+
 Backend Setup
 cd server
 npm install
 npm start
+
 Environment Variables
-
 Create a .env file inside the server folder and add the following:
-
 MONGO_URI=your_mongodb_atlas_connection_string
-JWT_SECRET=your_secret_key
 PORT=10000
 MongoDB Atlas Configuration
 Create a MongoDB Atlas account
