@@ -87,9 +87,11 @@ Database Hosting – MongoDB Atlas
 
 MongoDB Atlas is used for cloud database hosting and secure data storage.
 
-Live Demo
-Mindova Learning Application Live Demo
+## Live Demo
 
+The application is successfully deployed and can be accessed using the link below:
+
+🔗 https://mindova-learning-application-345mu7cj3.vercel.app/
 Future Enhancements
 AI-Based Course Recommendation
 Quiz and Certification Module
