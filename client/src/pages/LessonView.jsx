@@ -101,10 +101,41 @@ const LessonView = () => {
                     />
                 ) : (
                     <>
-                        <div style={{ background: '#000', aspectRatio: '16/9', borderRadius: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '2rem' }}>
-                            <PlayCircle size={80} color="white" />
-                            <p style={{ color: 'white', marginLeft: '1rem' }}>Video Player Placeholder for {activeLesson.title}</p>
-                        </div>
+                        {activeLesson.videoUrl ? (
+                            <>
+                                <div style={{ aspectRatio: '16/9', borderRadius: '1rem', overflow: 'hidden', marginBottom: '1.5rem', background: '#000' }}>
+                                    <iframe 
+                                        width="100%" 
+                                        height="100%" 
+                                        src={activeLesson.videoUrl.includes('youtube.com') || activeLesson.videoUrl.includes('youtu.be') 
+                                            ? `https://www.youtube.com/embed/${activeLesson.videoUrl.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/)?.[1]}`
+                                            : activeLesson.videoUrl
+                                        } 
+                                        title={activeLesson.title} 
+                                        frameBorder="0" 
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                                        allowFullScreen
+                                        style={{ width: '100%', height: '100%', border: 'none' }}
+                                    ></iframe>
+                                </div>
+                                <div style={{ marginBottom: '2rem', display: 'flex', justifyContent: 'flex-end' }}>
+                                    <a 
+                                        href={activeLesson.videoUrl} 
+                                        target="_blank" 
+                                        rel="noopener noreferrer" 
+                                        className="btn btn-outline" 
+                                        style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: '#ef4444', color: 'white', border: 'none' }}
+                                    >
+                                        <PlayCircle size={18} /> Watch on YouTube Directly
+                                    </a>
+                                </div>
+                            </>
+                        ) : (
+                            <div style={{ background: '#000', aspectRatio: '16/9', borderRadius: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '2rem' }}>
+                                <PlayCircle size={80} color="white" />
+                                <p style={{ color: 'white', marginLeft: '1rem' }}>Video Player Placeholder for {activeLesson.title}</p>
+                            </div>
+                        )}
                         <h2>{activeLesson.title} {enrollment?.status === 'pending' && '(Pending)'}</h2>
                         <p style={{ color: 'var(--text-muted)', marginTop: '1rem' }}>{activeLesson.content || 'No description available.'}</p>
                         

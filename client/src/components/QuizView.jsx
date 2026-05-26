@@ -1,14 +1,49 @@
 import React, { useState, useEffect } from 'react';
 import { CheckCircle, XCircle } from 'lucide-react';
 
-const QuizView = ({ quiz, onComplete }) => { 
+const QuizView = ({ quiz: initialQuiz, quizId: propQuizId, courseId: propCourseId, onComplete }) => { 
    
+    const [quiz, setQuiz] = useState(initialQuiz);
+    const [loading, setLoading] = useState(!initialQuiz);
+    const [error, setError] = useState(null);
     const [answers, setAnswers] = useState({});
     const [score, setScore] = useState(null);
- 
     const [submitting, setSubmitting] = useState(false);
 
-    
+    useEffect(() => {
+        if (initialQuiz) {
+            setQuiz(initialQuiz);
+            setLoading(false);
+            return;
+        }
+
+        const fetchQuiz = async () => {
+            try {
+                setLoading(true);
+                const targetQuizId = propQuizId;
+                if (!targetQuizId) {
+                    throw new Error("No quiz ID provided");
+                }
+                const res = await fetch(`https://mindova-learning-application-1.onrender.com/api/quizzes/${targetQuizId}`);
+                if (!res.ok) {
+                    throw new Error('Quiz not found');
+                }
+                const data = await res.json();
+                setQuiz(data);
+            } catch (err) {
+                setError(err.message);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        if (propQuizId) {
+            fetchQuiz();
+        } else {
+            setError('No quiz ID or quiz data provided');
+            setLoading(false);
+        }
+    }, [initialQuiz, propQuizId]);
 
     const handleOptionSelect = (questionIndex, optionIndex) => {
         setAnswers(prev => ({
@@ -18,6 +53,8 @@ const QuizView = ({ quiz, onComplete }) => {
     };
 
     const handleSubmit = async () => {
+        if (!quiz || !quiz.questions) return;
+        
         if (Object.keys(answers).length < quiz.questions.length) {
             alert("Please answer all questions before submitting.");
             return;
@@ -34,13 +71,16 @@ const QuizView = ({ quiz, onComplete }) => {
         const calculatedScore = Math.round((correctCount / quiz.questions.length) * 100);
         
         try {
+            const finalCourseId = propCourseId || quiz.courseId;
+            const finalQuizId = propQuizId || quiz._id;
+
             await fetch('https://mindova-learning-application-1.onrender.com/api/enrollments/quiz-score', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 },
-                body: JSON.stringify({ courseId, quizId, score: calculatedScore })
+                body: JSON.stringify({ courseId: finalCourseId, quizId: finalQuizId, score: calculatedScore })
             });
             setScore(calculatedScore);
         } catch (err) {
@@ -51,7 +91,9 @@ const QuizView = ({ quiz, onComplete }) => {
         }
     };
 
-    
+    if (loading) return <div style={{ textAlign: 'center', padding: '5rem' }}>Loading Quiz...</div>;
+    if (error) return <div style={{ textAlign: 'center', padding: '5rem', color: '#ef4444' }}>Error: {error}</div>;
+    if (!quiz || !quiz.questions) return <div style={{ textAlign: 'center', padding: '5rem' }}>No quiz questions available.</div>;
 
     if (score !== null) {
         return (
@@ -63,7 +105,7 @@ const QuizView = ({ quiz, onComplete }) => {
                 )}
                 <h2>Quiz Completed!</h2>
                 <p style={{ fontSize: '1.2rem', margin: '1rem 0' }}>Your Score: <strong>{score}%</strong></p>
-                <button onClick={onComplete} className="btn btn-primary mt-4">Return to Lesson</button>
+                <button onClick={onComplete} className="btn btn-primary mt-4">Return</button>
             </div>
         );
     }

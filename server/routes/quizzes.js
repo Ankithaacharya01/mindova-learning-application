@@ -1,38 +1,34 @@
 const express = require('express');
 const router = express.Router();
 const Quiz = require('../models/Quiz');
+const Course = require('../models/Course');
 const auth = require('../middleware/auth');
-const Course = require('../models/Course');
-// Get Quiz by Course ID
-const Course = require('../models/Course');
 
+// Get Quiz by Course ID (Supports both courseId and courseTitle matches)
 router.get('/course/:courseId', async (req, res) => {
     try {
-
         const course = await Course.findById(req.params.courseId);
-
         if (!course) {
-            return res.status(404).json({
-                error: 'Course not found'
-            });
+            return res.status(404).json({ error: 'Course not found' });
         }
 
+        // Escape title for safe regex search (e.g. C++)
+        const escapedTitle = course.title.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
         const quiz = await Quiz.findOne({
-            courseTitle: course.title
+            $or: [
+                { courseId: course._id },
+                { courseTitle: { $regex: new RegExp(`^${escapedTitle}$`, 'i') } }
+            ]
         });
 
         if (!quiz) {
-            return res.status(404).json({
-                error: 'Course quiz not found'
-            });
+            return res.status(404).json({ error: 'Course quiz not found' });
         }
 
         res.json(quiz);
-
     } catch (err) {
-        res.status(500).json({
-            error: err.message
-        });
+        res.status(500).json({ error: err.message });
     }
 });
 
@@ -40,13 +36,16 @@ router.get('/course/:courseId', async (req, res) => {
 router.get('/:id', async (req, res) => {
     try {
         const quiz = await Quiz.findById(req.params.id);
+        if (!quiz) {
+            return res.status(404).json({ error: 'Quiz not found' });
+        }
         res.json(quiz);
     } catch (err) {
-        res.status(404).json({ error: 'Quiz not found' });
+        res.status(500).json({ error: err.message });
     }
 });
 
-// Create Quiz (Instructors)
+// Create Quiz
 router.post('/', auth(['instructor', 'admin']), async (req, res) => {
     try {
         const quiz = new Quiz(req.body);

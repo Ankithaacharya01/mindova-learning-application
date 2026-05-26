@@ -14,7 +14,7 @@ const CourseQuizPage = () => {
     useEffect(() => {
         const fetchQuiz = async () => {
             try {
-                const res = await fetch(`https://mindova-learning-application-1.onrender.com/api/quizzes/${courseId}`);
+                const res = await fetch(`https://mindova-learning-application-1.onrender.com/api/quizzes/course/${courseId}`);
                 if (!res.ok) {
                     throw new Error('Course quiz not found or not created yet.');
                 }
@@ -48,9 +48,11 @@ const CourseQuizPage = () => {
         <div style={{ maxWidth: '800px', margin: '0 auto', padding: '2rem 0' }}>
             <button onClick={() => navigate('/dashboard')} className="btn btn-outline" style={{ marginBottom: '2rem' }}>&larr; Back to Dashboard</button>
             <QuizView 
-    quiz={courseQuiz}
-    onComplete={() => navigate('/dashboard')}
-/>
+                quiz={courseQuiz}
+                courseId={courseId}
+                quizId={courseQuiz?._id}
+                onComplete={() => navigate('/dashboard')}
+            />
         </div>
     );
 };
