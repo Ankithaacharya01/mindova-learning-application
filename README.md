@@ -52,3 +52,7 @@ The application provides authentication, course management, responsive UI, secur
 ## Conclusion
 
 Mindova demonstrates the implementation of a full-stack MERN application with secure authentication, scalable backend architecture, and responsive frontend design suitable for modern e-learning systems.
+
+## live demo
+
+mindova-learning-application-345mu7cj3.vercel.app
