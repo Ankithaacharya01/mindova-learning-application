@@ -10,7 +10,7 @@ const Dashboard = () => {
     const navigate = useNavigate();
     const [myCourses, setMyCourses] = useState([]);
     const [stats, setStats] = useState(null);
-    const [pendingRequests, setPendingRequests] = useState([]);
+    const [allEnrollments, setAllEnrollments] = useState([]);
     const [studentDetails, setStudentDetails] = useState([]);
     const [coursesEnrollmentStats, setCoursesEnrollmentStats] = useState([]);
     const [pendingStudents, setPendingStudents] = useState([]);
@@ -29,7 +29,7 @@ const Dashboard = () => {
             .then(data => {
                 if (user.role === 'admin') {
                     setStats(data.stats);
-                    setPendingRequests(data.pendingEnrollments);
+                    setAllEnrollments(data.allEnrollments || []);
                     setStudentDetails(data.studentDetails || []);
                     setCoursesEnrollmentStats(data.coursesEnrollmentStats || []);
                     setPendingStudents(data.pendingStudents || []);
@@ -224,13 +224,84 @@ const Dashboard = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {pendingRequests.map(req => (
+                                {(() => {
+                                    const pendingRequests = allEnrollments.filter(req => req.status === 'pending');
+                                    return (
+                                        <>
+                                            {pendingRequests.map(req => (
+                                                <tr key={req._id} style={{ borderBottom: '1px solid var(--border)' }}>
+                                                    <td style={{ padding: '1rem' }}>
+                                                        <div>{req.studentId?.name}</div>
+                                                        <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{req.studentId?.email}</div>
+                                                    </td>
+                                                    <td style={{ padding: '1rem' }}>{req.courseId?.title}</td>
+                                                    <td style={{ padding: '1rem' }}>
+                                                        <div style={{ fontSize: '0.9rem', fontWeight: '500' }}>
+                                                            Name: <span style={{ color: 'var(--text-color)' }}>{req.upiName || 'N/A'}</span>
+                                                        </div>
+                                                        <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>
+                                                            Txn ID: <span style={{ fontFamily: 'monospace' }}>{req.transactionId || 'N/A'}</span>
+                                                        </div>
+                                                        <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>
+                                                            Amount: <span style={{ color: 'var(--primary-color)', fontWeight: 'bold' }}>₹{req.courseId?.price || 15000}</span>
+                                                        </div>
+                                                    </td>
+                                                    <td style={{ padding: '1rem', display: 'flex', gap: '0.5rem' }}>
+                                                        <button 
+                                                            onClick={() => handleApproval(req._id, 'approved')}
+                                                            className="btn" 
+                                                            style={{ background: '#10b981', color: 'white', padding: '0.5rem' }}
+                                                            title="Approve Enrollment"
+                                                        >
+                                                            <Check size={18} />
+                                                        </button>
+                                                        <button 
+                                                            onClick={() => handleApproval(req._id, 'rejected')}
+                                                            className="btn" 
+                                                            style={{ background: '#ef4444', color: 'white', padding: '0.5rem' }}
+                                                            title="Reject Enrollment"
+                                                        >
+                                                            <X size={18} />
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                            {pendingRequests.length === 0 && (
+                                                <tr>
+                                                    <td colSpan="4" style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>No pending requests</td>
+                                                </tr>
+                                            )}
+                                        </>
+                                    );
+                                })()}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h3>Enrollment Payment History Log</h3>
+                    <div className="card" style={{ marginTop: '1rem', padding: '1rem', overflowX: 'auto', marginBottom: '3rem' }}>
+                        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                            <thead>
+                                <tr style={{ borderBottom: '1px solid var(--border)', textAlign: 'left' }}>
+                                    <th style={{ padding: '1rem' }}>Student</th>
+                                    <th style={{ padding: '1rem' }}>Course</th>
+                                    <th style={{ padding: '1rem' }}>Amount</th>
+                                    <th style={{ padding: '1rem' }}>UPI Payment Details</th>
+                                    <th style={{ padding: '1rem' }}>Request Date</th>
+                                    <th style={{ padding: '1rem' }}>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {allEnrollments.map(req => (
                                     <tr key={req._id} style={{ borderBottom: '1px solid var(--border)' }}>
                                         <td style={{ padding: '1rem' }}>
-                                            <div>{req.studentId?.name}</div>
+                                            <div>{req.studentId?.name || 'Unknown Student'}</div>
                                             <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{req.studentId?.email}</div>
                                         </td>
-                                        <td style={{ padding: '1rem' }}>{req.courseId?.title}</td>
+                                        <td style={{ padding: '1rem' }}>{req.courseId?.title || 'Unknown Course'}</td>
+                                        <td style={{ padding: '1rem', fontWeight: 'bold' }}>
+                                            ₹{req.courseId?.price || 15000}
+                                        </td>
                                         <td style={{ padding: '1rem' }}>
                                             <div style={{ fontSize: '0.9rem', fontWeight: '500' }}>
                                                 Name: <span style={{ color: 'var(--text-color)' }}>{req.upiName || 'N/A'}</span>
@@ -239,29 +310,31 @@ const Dashboard = () => {
                                                 Txn ID: <span style={{ fontFamily: 'monospace' }}>{req.transactionId || 'N/A'}</span>
                                             </div>
                                         </td>
-                                        <td style={{ padding: '1rem', display: 'flex', gap: '0.5rem' }}>
-                                            <button 
-                                                onClick={() => handleApproval(req._id, 'approved')}
-                                                className="btn" 
-                                                style={{ background: '#10b981', color: 'white', padding: '0.5rem' }}
-                                                title="Approve Enrollment"
-                                            >
-                                                <Check size={18} />
-                                            </button>
-                                            <button 
-                                                onClick={() => handleApproval(req._id, 'rejected')}
-                                                className="btn" 
-                                                style={{ background: '#ef4444', color: 'white', padding: '0.5rem' }}
-                                                title="Reject Enrollment"
-                                            >
-                                                <X size={18} />
-                                            </button>
+                                        <td style={{ padding: '1rem' }}>
+                                            {new Date(req.createdAt).toLocaleDateString(undefined, {
+                                                year: 'numeric',
+                                                month: 'short',
+                                                day: 'numeric'
+                                            })}
+                                        </td>
+                                        <td style={{ padding: '1rem' }}>
+                                            <span style={{ 
+                                                background: req.status === 'approved' ? 'rgba(16, 185, 129, 0.2)' : req.status === 'rejected' ? 'rgba(239, 68, 68, 0.2)' : 'rgba(245, 158, 11, 0.2)',
+                                                color: req.status === 'approved' ? '#10b981' : req.status === 'rejected' ? '#ef4444' : '#f59e0b',
+                                                padding: '4px 8px', 
+                                                borderRadius: '4px',
+                                                fontSize: '0.85rem',
+                                                fontWeight: 600,
+                                                textTransform: 'capitalize'
+                                              }}>
+                                                {req.status}
+                                            </span>
                                         </td>
                                     </tr>
                                 ))}
-                                {pendingRequests.length === 0 && (
+                                {allEnrollments.length === 0 && (
                                     <tr>
-                                        <td colSpan="4" style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>No pending requests</td>
+                                        <td colSpan="6" style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>No enrollment request history found</td>
                                     </tr>
                                 )}
                             </tbody>

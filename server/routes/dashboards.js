@@ -55,9 +55,10 @@ router.get('/admin', auth(['admin']), async (req, res) => {
         const totalInstructors = await User.countDocuments({ role: 'instructor' });
         const totalStudentsCount = await User.countDocuments({ role: 'student' });
 
-        const pendingEnrollments = await Enrollment.find({ status: 'pending' })
+        const allEnrollments = await Enrollment.find()
             .populate('studentId', 'name email')
-            .populate('courseId', 'title');
+            .populate('courseId', 'title price')
+            .sort({ createdAt: -1 });
 
         // Detailed student tracking
         const students = await User.find({ role: 'student' }).select('name email');
@@ -107,7 +108,7 @@ router.get('/admin', auth(['admin']), async (req, res) => {
                 totalInstructors,
                 totalStudents: totalStudentsCount
             },
-            pendingEnrollments,
+            allEnrollments,
             studentDetails,
             coursesEnrollmentStats,
             pendingStudents
