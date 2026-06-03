@@ -7,7 +7,7 @@ import App from './App.jsx'
 const originalFetch = window.fetch;
 window.fetch = function (input, init) {
   if (typeof input === 'string' && input.startsWith('https://mindova-learning-application-1.onrender.com')) {
-    const baseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    const baseUrl = !window.location.hostname.includes('vercel.app') && !window.location.hostname.includes('onrender.com')
       ? 'http://localhost:5000'
       : 'https://mindova-learning-application-1.onrender.com';
     input = input.replace('https://mindova-learning-application-1.onrender.com', baseUrl);
