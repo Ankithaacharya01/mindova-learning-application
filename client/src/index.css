@@ -1,12 +1,15 @@
 :root {
-  --primary: #6366f1;
-  --secondary: #a855f7;
-  --background: #090d16;
-  --card-bg: rgba(17, 24, 39, 0.6);
-  --text: #f8fafc;
-  --text-muted: #94a3b8;
-  --glass: rgba(255, 255, 255, 0.03);
-  --border: rgba(255, 255, 255, 0.08);
+  --primary: #2563eb;       /* Royal Blue */
+  --secondary: #0ea5e9;     /* Sky Blue */
+  --background: #f8fafc;    /* Clean off-white slate */
+  --card-bg: rgba(255, 255, 255, 0.85); /* Light glassmorphism card */
+  --text: #0f172a;          /* Dark slate */
+  --text-muted: #64748b;    /* Muted slate */
+  --glass: rgba(14, 165, 233, 0.04);
+  --border: rgba(15, 23, 42, 0.06);
+  --primary-color: #2563eb;
+  --bg-color: #ffffff;
+  --border-color: rgba(15, 23, 42, 0.06);
 }
 
 * {
@@ -19,8 +22,8 @@ body {
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   background-color: var(--background);
   background-image: 
-    linear-gradient(rgba(99, 102, 241, 0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(99, 102, 241, 0.025) 1px, transparent 1px);
+    linear-gradient(rgba(14, 165, 233, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(14, 165, 233, 0.04) 1px, transparent 1px);
   background-size: 50px 50px;
   background-position: center;
   color: var(--text);
@@ -31,7 +34,7 @@ body {
   overflow-x: hidden;
 }
 
-/* Floating animated background blobs for innovation aesthetics */
+/* Floating animated background blobs for innovative aesthetics */
 body::before {
   content: "";
   position: fixed;
@@ -39,11 +42,11 @@ body::before {
   left: -15%;
   width: 60vw;
   height: 60vw;
-  background: radial-gradient(circle, rgba(99, 102, 241, 0.12) 0%, rgba(168, 85, 247, 0.04) 50%, transparent 100%);
-  filter: blur(100px);
+  background: radial-gradient(circle, rgba(14, 165, 233, 0.16) 0%, rgba(99, 102, 241, 0.05) 50%, transparent 100%);
+  filter: blur(90px);
   z-index: -1;
   pointer-events: none;
-  animation: float-blob-1 30s infinite alternate ease-in-out;
+  animation: float-blob-1 25s infinite alternate ease-in-out;
 }
 
 body::after {
@@ -53,11 +56,11 @@ body::after {
   right: -15%;
   width: 60vw;
   height: 60vw;
-  background: radial-gradient(circle, rgba(6, 182, 212, 0.12) 0%, rgba(99, 102, 241, 0.04) 50%, transparent 100%);
-  filter: blur(100px);
+  background: radial-gradient(circle, rgba(6, 182, 212, 0.14) 0%, rgba(56, 189, 248, 0.05) 50%, transparent 100%);
+  filter: blur(90px);
   z-index: -1;
   pointer-events: none;
-  animation: float-blob-2 30s infinite alternate ease-in-out;
+  animation: float-blob-2 25s infinite alternate ease-in-out;
 }
 
 @keyframes float-blob-1 {
@@ -65,10 +68,10 @@ body::after {
     transform: translate(0, 0) scale(1) rotate(0deg);
   }
   50% {
-    transform: translate(8vw, 12vh) scale(1.15) rotate(180deg);
+    transform: translate(6vw, 10vh) scale(1.1) rotate(180deg);
   }
   100% {
-    transform: translate(-4vw, 18vh) scale(0.9) rotate(360deg);
+    transform: translate(-3vw, 15vh) scale(0.95) rotate(360deg);
   }
 }
 
@@ -77,31 +80,35 @@ body::after {
     transform: translate(0, 0) scale(1) rotate(0deg);
   }
   50% {
-    transform: translate(-8vw, -12vh) scale(1.1) rotate(-180deg);
+    transform: translate(-6vw, -10vh) scale(1.15) rotate(-180deg);
   }
   100% {
-    transform: translate(4vw, -18vh) scale(0.95) rotate(-360deg);
+    transform: translate(3vw, -15vh) scale(0.9) rotate(-360deg);
   }
 }
 
 .auth-card {
   background: var(--card-bg);
-  backdrop-filter: blur(12px);
-  border: 1px solid var(--border);
-  border-radius: 1rem;
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 1.25rem;
   padding: 2.5rem;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  box-shadow: 
+    0 10px 30px -10px rgba(148, 163, 184, 0.25),
+    0 1px 3px rgba(15, 23, 42, 0.03);
   max-width: 400px;
   width: 100%;
 }
 
 .card {
   background: var(--card-bg);
-  backdrop-filter: blur(12px);
-  border: 1px solid var(--border);
-  border-radius: 1rem;
-  padding: 2.5rem;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 1.25rem;
+  padding: 2rem;
+  box-shadow: 
+    0 10px 30px -10px rgba(148, 163, 184, 0.25),
+    0 1px 3px rgba(15, 23, 42, 0.03);
   width: 100%;
 }
 
@@ -110,7 +117,7 @@ body::after {
   border-radius: 0.5rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   border: none;
 }
 
@@ -121,12 +128,23 @@ body::after {
 
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.4);
+  box-shadow: 0 8px 20px -4px rgba(37, 99, 235, 0.35);
+}
+
+.btn-outline {
+  background: rgba(255, 255, 255, 0.8);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+.btn-outline:hover {
+  background: #f1f5f9;
+  border-color: rgba(15, 23, 42, 0.15);
 }
 
 .glass-nav {
-  background: rgba(15, 23, 42, 0.8);
-  backdrop-filter: blur(8px);
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border);
   position: sticky;
   top: 0;
@@ -135,6 +153,7 @@ body::after {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  box-shadow: 0 4px 20px -10px rgba(148, 163, 184, 0.15);
 }
 
 .grid {
@@ -145,25 +164,72 @@ body::after {
 .container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 2.5rem 1.5rem;
 }
 
 .course-card {
   background: var(--card-bg);
-  border: 1px solid var(--border);
-  border-radius: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 1.25rem;
   overflow: hidden;
-  transition: transform 0.3s;
+  box-shadow: 
+    0 10px 30px -10px rgba(148, 163, 184, 0.2),
+    0 1px 3px rgba(15, 23, 42, 0.02);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .course-card:hover {
   transform: translateY(-5px);
+  box-shadow: 
+    0 20px 40px -15px rgba(148, 163, 184, 0.35),
+    0 1px 4px rgba(15, 23, 42, 0.04);
 }
 
 .course-card img {
   width: 100%;
   height: 200px;
   object-fit: cover;
+}
+
+/* Global Form Input Overrides for perfect light mode integration */
+input, select, textarea {
+  color: var(--text) !important;
+  background-color: rgba(255, 255, 255, 0.95) !important;
+  border: 1px solid rgba(15, 23, 42, 0.1) !important;
+  padding: 0.8rem 1rem !important;
+  border-radius: 0.5rem !important;
+  transition: all 0.2s ease !important;
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: none !important;
+  border-color: var(--primary) !important;
+  background-color: #ffffff !important;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1) !important;
+}
+
+input::placeholder {
+  color: var(--text-muted) !important;
+  opacity: 0.7;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
 }
 
 .p-4 { padding: 1rem; }
