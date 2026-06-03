@@ -6,6 +6,8 @@ const EnrollmentSchema = new mongoose.Schema({
     progress: { type: Number, default: 0 },
     status: { type: String, enum: ['pending', 'approved', 'rejected'], default: 'pending' },
     completed: { type: Boolean, default: false },
+    upiName: { type: String },
+    transactionId: { type: String },
     quizScores: [
         {
             quizId: { type: mongoose.Schema.Types.ObjectId, ref: 'Quiz' },

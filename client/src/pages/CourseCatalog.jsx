@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 const CourseCatalog = () => {
     const [courses, setCourses] = useState([]);
     const { user } = useAuth();
+    const navigate = useNavigate();
 
     useEffect(() => {
         fetch('https://mindova-learning-application-1.onrender.com/api/courses')
@@ -13,25 +14,9 @@ const CourseCatalog = () => {
             .catch(err => console.error(err));
     }, []);
 
-    const enroll = async (courseId) => {
+    const enroll = (courseId) => {
         if (!user) return alert('Please login to enroll');
-        try {
-            const res = await fetch(`https://mindova-learning-application-1.onrender.com/api/courses/${courseId}/enroll`, {
-                method: 'POST',
-                headers: { 
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                }
-            });
-            if (res.ok) {
-                alert('Enrollment requested successfully! Waiting for admin approval.');
-            } else {
-                const data = await res.json();
-                alert(data.error);
-            }
-        } catch (err) {
-            console.error(err);
-        }
+        navigate(`/courses/${courseId}`);
     };
 
     return (

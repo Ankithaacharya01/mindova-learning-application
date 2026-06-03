@@ -8,7 +8,8 @@ const UserSchema = new mongoose.Schema({
     role: { type: String, enum: ['student', 'instructor', 'admin'], default: 'student' },
     bio: { type: String },
     profilePicture: { type: String },
-    enrolledCourses: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Course' }]
+    enrolledCourses: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Course' }],
+    isApproved: { type: Boolean, default: true }
 }, { timestamps: true });
 
 UserSchema.pre('save', async function(next) {

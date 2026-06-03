@@ -85,6 +85,20 @@ router.get('/admin', auth(['admin']), async (req, res) => {
             };
         }));
 
+        // Enrollment stats per course (for admin dashboard graph)
+        const courses = await Course.find().select('title');
+        const coursesEnrollmentStats = await Promise.all(courses.map(async (course) => {
+            const count = await Enrollment.countDocuments({ courseId: course._id, status: 'approved' });
+            return {
+                title: course.title,
+                enrolledCount: count
+            };
+        }));
+
+        // Pending student login registrations
+        const pendingStudents = await User.find({ role: 'student', isApproved: false })
+            .select('name email createdAt');
+
         res.json({
             stats: {
                 totalUsers,
@@ -94,7 +108,9 @@ router.get('/admin', auth(['admin']), async (req, res) => {
                 totalStudents: totalStudentsCount
             },
             pendingEnrollments,
-            studentDetails
+            studentDetails,
+            coursesEnrollmentStats,
+            pendingStudents
         });
     } catch (err) {
         res.status(500).json({ error: err.message });

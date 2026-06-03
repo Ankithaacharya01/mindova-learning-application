@@ -12,6 +12,8 @@ const Dashboard = () => {
     const [stats, setStats] = useState(null);
     const [pendingRequests, setPendingRequests] = useState([]);
     const [studentDetails, setStudentDetails] = useState([]);
+    const [coursesEnrollmentStats, setCoursesEnrollmentStats] = useState([]);
+    const [pendingStudents, setPendingStudents] = useState([]);
 
     const fetchDashboardData = () => {
         if (user) {
@@ -29,6 +31,8 @@ const Dashboard = () => {
                     setStats(data.stats);
                     setPendingRequests(data.pendingEnrollments);
                     setStudentDetails(data.studentDetails || []);
+                    setCoursesEnrollmentStats(data.coursesEnrollmentStats || []);
+                    setPendingStudents(data.pendingStudents || []);
                 } else if (user.role === 'instructor') {
                     setMyCourses(data.courses);
                     setStats(data.stats);
@@ -60,6 +64,28 @@ const Dashboard = () => {
             }
         } catch (err) {
             console.error(err);
+        }
+    };
+
+    const handleApproveStudent = async (id) => {
+        try {
+            const res = await fetch(`https://mindova-learning-application-1.onrender.com/api/auth/approve-student/${id}`, {
+                method: 'PUT',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            });
+            if (res.ok) {
+                alert('Student account approved successfully!');
+                fetchDashboardData();
+            } else {
+                const data = await res.json();
+                alert(data.error);
+            }
+        } catch (err) {
+            console.error(err);
+            alert('Failed to approve student');
         }
     };
 
@@ -151,13 +177,49 @@ const Dashboard = () => {
                         </div>
                     </div>
 
+                    {/* Course Enrollments Analytics Chart */}
+                    {coursesEnrollmentStats.length > 0 && (
+                        <div className="card" style={{ padding: '2rem', marginBottom: '3rem' }}>
+                            <h3 style={{ marginBottom: '1.5rem' }}>Course Enrollments Analytics</h3>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                                {(() => {
+                                    const maxVal = Math.max(...coursesEnrollmentStats.map(c => c.enrolledCount), 1);
+                                    return coursesEnrollmentStats.map((item, idx) => {
+                                        const percentage = (item.enrolledCount / maxVal) * 100;
+                                        return (
+                                            <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', flexWrap: 'wrap' }}>
+                                                <div style={{ width: '220px', fontWeight: '500', fontSize: '0.95rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={item.title}>
+                                                    {item.title}
+                                                </div>
+                                                <div style={{ flex: 1, height: '24px', background: 'var(--border)', borderRadius: '12px', overflow: 'hidden', minWidth: '200px', border: '1px solid var(--border)' }}>
+                                                    <div style={{ 
+                                                        height: '100%', 
+                                                        width: `${percentage}%`, 
+                                                        background: 'linear-gradient(90deg, var(--primary-color, #2b3cf5) 0%, #818cf8 100%)', 
+                                                        borderRadius: '12px',
+                                                        transition: 'width 1.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                                                        boxShadow: '0 0 8px rgba(99, 102, 241, 0.4)'
+                                                    }}></div>
+                                                </div>
+                                                <div style={{ width: '90px', textAlign: 'right', fontWeight: 'bold', color: 'var(--primary-color)' }}>
+                                                    {item.enrolledCount} {item.enrolledCount === 1 ? 'user' : 'users'}
+                                                </div>
+                                            </div>
+                                        );
+                                    });
+                                })()}
+                            </div>
+                        </div>
+                    )}
+
                     <h3>Pending Enrollment Requests</h3>
-                    <div className="card" style={{ marginTop: '1rem', padding: '1rem', overflowX: 'auto' }}>
+                    <div className="card" style={{ marginTop: '1rem', padding: '1rem', overflowX: 'auto', marginBottom: '3rem' }}>
                         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                             <thead>
                                 <tr style={{ borderBottom: '1px solid var(--border)', textAlign: 'left' }}>
                                     <th style={{ padding: '1rem' }}>Student</th>
                                     <th style={{ padding: '1rem' }}>Course</th>
+                                    <th style={{ padding: '1rem' }}>UPI Payment Details</th>
                                     <th style={{ padding: '1rem' }}>Action</th>
                                 </tr>
                             </thead>
@@ -169,11 +231,20 @@ const Dashboard = () => {
                                             <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{req.studentId?.email}</div>
                                         </td>
                                         <td style={{ padding: '1rem' }}>{req.courseId?.title}</td>
+                                        <td style={{ padding: '1rem' }}>
+                                            <div style={{ fontSize: '0.9rem', fontWeight: '500' }}>
+                                                Name: <span style={{ color: 'var(--text-color)' }}>{req.upiName || 'N/A'}</span>
+                                            </div>
+                                            <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>
+                                                Txn ID: <span style={{ fontFamily: 'monospace' }}>{req.transactionId || 'N/A'}</span>
+                                            </div>
+                                        </td>
                                         <td style={{ padding: '1rem', display: 'flex', gap: '0.5rem' }}>
                                             <button 
                                                 onClick={() => handleApproval(req._id, 'approved')}
                                                 className="btn" 
                                                 style={{ background: '#10b981', color: 'white', padding: '0.5rem' }}
+                                                title="Approve Enrollment"
                                             >
                                                 <Check size={18} />
                                             </button>
@@ -181,6 +252,7 @@ const Dashboard = () => {
                                                 onClick={() => handleApproval(req._id, 'rejected')}
                                                 className="btn" 
                                                 style={{ background: '#ef4444', color: 'white', padding: '0.5rem' }}
+                                                title="Reject Enrollment"
                                             >
                                                 <X size={18} />
                                             </button>
@@ -189,7 +261,53 @@ const Dashboard = () => {
                                 ))}
                                 {pendingRequests.length === 0 && (
                                     <tr>
-                                        <td colSpan="3" style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>No pending requests</td>
+                                        <td colSpan="4" style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>No pending requests</td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h3>Pending Student Logins</h3>
+                    <div className="card" style={{ marginTop: '1rem', padding: '1rem', overflowX: 'auto', marginBottom: '3rem' }}>
+                        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                            <thead>
+                                <tr style={{ borderBottom: '1px solid var(--border)', textAlign: 'left' }}>
+                                    <th style={{ padding: '1rem' }}>Student</th>
+                                    <th style={{ padding: '1rem' }}>Registration Date</th>
+                                    <th style={{ padding: '1rem' }}>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {pendingStudents.map(student => (
+                                    <tr key={student._id} style={{ borderBottom: '1px solid var(--border)' }}>
+                                        <td style={{ padding: '1rem' }}>
+                                            <div>{student.name}</div>
+                                            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{student.email}</div>
+                                        </td>
+                                        <td style={{ padding: '1rem' }}>
+                                            {new Date(student.createdAt).toLocaleDateString(undefined, {
+                                                year: 'numeric',
+                                                month: 'short',
+                                                day: 'numeric',
+                                                hour: '2-digit',
+                                                minute: '2-digit'
+                                            })}
+                                        </td>
+                                        <td style={{ padding: '1rem' }}>
+                                            <button 
+                                                onClick={() => handleApproveStudent(student._id)}
+                                                className="btn btn-primary" 
+                                                style={{ background: '#10b981', color: 'white', padding: '0.5rem 1rem', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.25rem' }}
+                                            >
+                                                <Check size={16} /> Approve Login
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                                {pendingStudents.length === 0 && (
+                                    <tr>
+                                        <td colSpan="3" style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>No student logins pending approval</td>
                                     </tr>
                                 )}
                             </tbody>

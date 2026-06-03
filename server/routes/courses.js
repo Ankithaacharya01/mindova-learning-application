@@ -47,22 +47,20 @@ router.post('/:id/enroll', auth(['student']), async (req, res) => {
             return res.status(400).json({ error: 'Already enrolled' });
         }
         
-        // Create new enrollment
+        const { upiName, transactionId } = req.body;
+        
+        // Create new enrollment - UPI payments are pending admin verification
         enrollment = new Enrollment({
             studentId: req.user.id,
             courseId: course._id,
-            status: req.body.paymentSuccess ? 'approved' : 'pending' // Auto approve if payment succeeded
+            status: 'pending',
+            upiName,
+            transactionId
         });
         await enrollment.save();
 
-        if (req.body.paymentSuccess) {
-            // Update legacy arrays
-            await User.findByIdAndUpdate(req.user.id, { $addToSet: { enrolledCourses: course._id } });
-            await Course.findByIdAndUpdate(course._id, { $addToSet: { studentsEnrolled: req.user.id } });
-        }
-
         res.json({ 
-            message: req.body.paymentSuccess ? 'Payment successful! Enrollment approved.' : 'Enrollment requested. Waiting for admin approval.', 
+            message: 'Enrollment requested. Waiting for admin approval.', 
             enrollment 
         });
     } catch (err) {

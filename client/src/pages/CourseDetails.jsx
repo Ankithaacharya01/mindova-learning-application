@@ -13,12 +13,11 @@ const CourseDetails = () => {
     const [courseQuiz, setCourseQuiz] = useState(null);
     const [takingCourseQuiz, setTakingCourseQuiz] = useState(false);
     
-    // Payment states
+    // UPI Payment states
     const [showPaymentModal, setShowPaymentModal] = useState(false);
     const [processingPayment, setProcessingPayment] = useState(false);
-    const [cardNumber, setCardNumber] = useState('');
-    const [expiry, setExpiry] = useState('');
-    const [cvv, setCvv] = useState('');
+    const [upiName, setUpiName] = useState('');
+    const [transactionId, setTransactionId] = useState('');
 
     useEffect(() => {
         fetch(`https://mindova-learning-application-1.onrender.com/api/courses/${id}`)
@@ -54,7 +53,7 @@ const CourseDetails = () => {
         e.preventDefault();
         setProcessingPayment(true);
         
-        // Simulate payment gateway delay
+        // Simulate payment request delay
         await new Promise(resolve => setTimeout(resolve, 1500));
 
         try {
@@ -64,10 +63,10 @@ const CourseDetails = () => {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 },
-                body: JSON.stringify({ paymentSuccess: true })
+                body: JSON.stringify({ upiName, transactionId })
             });
             if (res.ok) {
-                alert('Payment successful! You are now enrolled and approved.');
+                alert('Fake UPI Payment Details submitted! Awaiting Admin verification and approval.');
                 setShowPaymentModal(false);
                 navigate('/dashboard');
             } else {
@@ -77,7 +76,7 @@ const CourseDetails = () => {
             }
         } catch (err) {
             console.error(err);
-            alert('Payment failed. Please try again.');
+            alert('Payment request submission failed. Please try again.');
         } finally {
             setProcessingPayment(false);
         }
@@ -202,71 +201,98 @@ const CourseDetails = () => {
                 </div>
             </div>
 
-            {/* Simulated Payment Modal */}
+            {/* Simulated UPI Payment Modal */}
             {showPaymentModal && (
                 <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, backdropFilter: 'blur(4px)' }}>
                     <div className="auth-card" style={{ width: '100%', maxWidth: '400px', padding: '2rem', background: 'var(--card-bg)' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-                            <h3 style={{ margin: 0 }}>Secure Checkout</h3>
+                            <h3 style={{ margin: 0 }}>UPI Payment</h3>
                             <button onClick={() => setShowPaymentModal(false)} style={{ background: 'transparent', border: 'none', color: 'var(--text-color)', cursor: 'pointer', fontSize: '1.5rem' }}>&times;</button>
                         </div>
                         
-                        <div style={{ background: 'var(--glass)', padding: '1rem', borderRadius: '0.5rem', marginBottom: '1.5rem', textAlign: 'center' }}>
-                            <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Total Amount</div>
+                        <div style={{ background: 'var(--glass)', padding: '1rem', borderRadius: '0.5rem', marginBottom: '1.25rem', textAlign: 'center' }}>
+                            <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Amount to Pay</div>
                             <div style={{ fontSize: '2rem', fontWeight: 'bold', color: 'var(--primary-color)' }}>₹{course.price || 15000}</div>
+                            <div style={{ fontSize: '0.9rem', color: 'var(--primary-color)', marginTop: '0.25rem', fontWeight: '500' }}>UPI ID: pay.mindova@upi</div>
                         </div>
+
+                        {/* Custom Mock QR Code */}
+                        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.25rem' }}>
+                            <svg width="140" height="140" viewBox="0 0 100 100" style={{ background: '#fff', padding: '8px', borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }}>
+                                <path d="M5,5 L95,5 L95,95 L5,95 Z" fill="none" stroke="#111827" strokeWidth="2" />
+                                
+                                <rect x="10" y="10" width="20" height="20" fill="#111827" />
+                                <rect x="14" y="14" width="12" height="12" fill="#fff" />
+                                <rect x="18" y="18" width="4" height="4" fill="#111827" />
+
+                                <rect x="70" y="10" width="20" height="20" fill="#111827" />
+                                <rect x="74" y="14" width="12" height="12" fill="#fff" />
+                                <rect x="78" y="18" width="4" height="4" fill="#111827" />
+
+                                <rect x="10" y="70" width="20" height="20" fill="#111827" />
+                                <rect x="14" y="74" width="12" height="12" fill="#fff" />
+                                <rect x="18" y="78" width="4" height="4" fill="#111827" />
+
+                                <rect x="40" y="15" width="8" height="8" fill="#111827" />
+                                <rect x="52" y="12" width="6" height="6" fill="#111827" />
+                                
+                                <rect x="15" y="40" width="8" height="8" fill="#111827" />
+                                <rect x="25" y="45" width="6" height="12" fill="#111827" />
+                                
+                                <rect x="40" y="40" width="20" height="20" fill="#111827" />
+                                <rect x="45" y="45" width="10" height="10" fill="#fff" />
+                                
+                                <rect x="70" y="40" width="12" height="6" fill="#111827" />
+                                <rect x="80" y="50" width="8" height="8" fill="#111827" />
+
+                                <rect x="42" y="72" width="14" height="6" fill="#111827" />
+                                <rect x="48" y="80" width="6" height="10" fill="#111827" />
+                                
+                                <rect x="72" y="72" width="8" height="8" fill="#111827" />
+                                <rect x="82" y="80" width="8" height="8" fill="#111827" />
+                                <rect x="75" y="82" width="5" height="5" fill="#111827" />
+                            </svg>
+                        </div>
+
+                        <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textAlign: 'center', marginBottom: '1.25rem' }}>
+                            Scan QR with any UPI app to pay, then submit receipt/transaction details below for admin approval.
+                        </p>
 
                         <form onSubmit={processPaymentAndEnroll} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                             <div>
-                                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem' }}>Card Number</label>
+                                <label style={{ display: 'block', marginBottom: '0.25rem', fontSize: '0.85rem', color: 'var(--text-muted)' }}>Payee Name (on Receipt)</label>
                                 <input 
                                     type="text" 
                                     className="btn" 
                                     style={{ width: '100%', background: 'var(--bg)', color: 'white', border: '1px solid var(--border)', textAlign: 'left', padding: '0.8rem' }}
-                                    placeholder="0000 0000 0000 0000"
-                                    maxLength="19"
+                                    placeholder="e.g. Jane Doe"
                                     required
-                                    value={cardNumber}
-                                    onChange={(e) => setCardNumber(e.target.value)}
+                                    value={upiName}
+                                    onChange={(e) => setUpiName(e.target.value)}
                                 />
                             </div>
                             
-                            <div style={{ display: 'flex', gap: '1rem' }}>
-                                <div style={{ flex: 1 }}>
-                                    <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem' }}>Expiry</label>
-                                    <input 
-                                        type="text" 
-                                        className="btn" 
-                                        style={{ width: '100%', background: 'var(--bg)', color: 'white', border: '1px solid var(--border)', textAlign: 'left', padding: '0.8rem' }}
-                                        placeholder="MM/YY"
-                                        maxLength="5"
-                                        required
-                                        value={expiry}
-                                        onChange={(e) => setExpiry(e.target.value)}
-                                    />
-                                </div>
-                                <div style={{ flex: 1 }}>
-                                    <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem' }}>CVV</label>
-                                    <input 
-                                        type="text" 
-                                        className="btn" 
-                                        style={{ width: '100%', background: 'var(--bg)', color: 'white', border: '1px solid var(--border)', textAlign: 'left', padding: '0.8rem' }}
-                                        placeholder="123"
-                                        maxLength="3"
-                                        required
-                                        value={cvv}
-                                        onChange={(e) => setCvv(e.target.value)}
-                                    />
-                                </div>
+                            <div>
+                                <label style={{ display: 'block', marginBottom: '0.25rem', fontSize: '0.85rem', color: 'var(--text-muted)' }}>UPI Transaction ID / UTR (12 Digits)</label>
+                                <input 
+                                    type="text" 
+                                    className="btn" 
+                                    style={{ width: '100%', background: 'var(--bg)', color: 'white', border: '1px solid var(--border)', textAlign: 'left', padding: '0.8rem' }}
+                                    placeholder="12-digit number (e.g. 123456789012)"
+                                    maxLength="25"
+                                    required
+                                    value={transactionId}
+                                    onChange={(e) => setTransactionId(e.target.value)}
+                                />
                             </div>
 
                             <button 
                                 type="submit" 
                                 className="btn btn-primary" 
                                 disabled={processingPayment}
-                                style={{ width: '100%', padding: '1rem', marginTop: '1rem', background: '#10b981', display: 'flex', justifyContent: 'center', gap: '0.5rem' }}
+                                style={{ width: '100%', padding: '1rem', marginTop: '0.5rem', background: '#10b981', display: 'flex', justifyContent: 'center', gap: '0.5rem' }}
                             >
-                                {processingPayment ? 'Processing...' : `Pay ₹${course.price || 15000}`}
+                                {processingPayment ? 'Submitting...' : `Submit Payment Details`}
                             </button>
                         </form>
                     </div>
