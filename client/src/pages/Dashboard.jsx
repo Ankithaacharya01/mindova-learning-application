@@ -5,6 +5,18 @@ import { useNavigate } from 'react-router-dom';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 
+const COLORS = [
+    'hsl(217, 91%, 60%)',  // Premium Blue
+    'hsl(258, 90%, 66%)',  // Premium Purple
+    'hsl(162, 76%, 45%)',  // Premium Teal/Green
+    'hsl(38, 92%, 50%)',   // Premium Amber
+    'hsl(340, 82%, 59%)',  // Premium Rose
+    'hsl(189, 94%, 43%)',  // Premium Cyan
+    'hsl(24, 94%, 50%)',   // Premium Orange
+    'hsl(280, 85%, 60%)',  // Premium Violet
+    'hsl(140, 70%, 48%)'   // Premium Emerald
+];
+
 const Dashboard = () => {
     const { user } = useAuth();
     const navigate = useNavigate();
@@ -14,6 +26,7 @@ const Dashboard = () => {
     const [studentDetails, setStudentDetails] = useState([]);
     const [coursesEnrollmentStats, setCoursesEnrollmentStats] = useState([]);
     const [pendingStudents, setPendingStudents] = useState([]);
+    const [hoveredSlice, setHoveredSlice] = useState(null);
 
     const fetchDashboardData = () => {
         if (user) {
@@ -177,38 +190,243 @@ const Dashboard = () => {
                         </div>
                     </div>
 
-                    {/* Course Enrollments Analytics Chart */}
+                    {/* Course Enrollments Analytics Pie Chart */}
                     {coursesEnrollmentStats.length > 0 && (
                         <div className="card" style={{ padding: '2rem', marginBottom: '3rem' }}>
                             <h3 style={{ marginBottom: '1.5rem' }}>Course Enrollments Analytics</h3>
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-                                {(() => {
-                                    const maxVal = Math.max(...coursesEnrollmentStats.map(c => c.enrolledCount), 1);
-                                    return coursesEnrollmentStats.map((item, idx) => {
-                                        const percentage = (item.enrolledCount / maxVal) * 100;
-                                        return (
-                                            <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', flexWrap: 'wrap' }}>
-                                                <div style={{ width: '220px', fontWeight: '500', fontSize: '0.95rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={item.title}>
-                                                    {item.title}
-                                                </div>
-                                                <div style={{ flex: 1, height: '24px', background: 'var(--border)', borderRadius: '12px', overflow: 'hidden', minWidth: '200px', border: '1px solid var(--border)' }}>
-                                                    <div style={{ 
-                                                        height: '100%', 
-                                                        width: `${percentage}%`, 
-                                                        background: 'linear-gradient(90deg, var(--primary-color, #2b3cf5) 0%, #818cf8 100%)', 
-                                                        borderRadius: '12px',
-                                                        transition: 'width 1.2s cubic-bezier(0.4, 0, 0.2, 1)',
-                                                        boxShadow: '0 0 8px rgba(99, 102, 241, 0.4)'
-                                                    }}></div>
-                                                </div>
-                                                <div style={{ width: '90px', textAlign: 'right', fontWeight: 'bold', color: 'var(--primary-color)' }}>
-                                                    {item.enrolledCount} {item.enrolledCount === 1 ? 'user' : 'users'}
-                                                </div>
-                                            </div>
-                                        );
-                                    });
-                                })()}
-                            </div>
+                            {(() => {
+                                const activeStats = coursesEnrollmentStats.filter(c => c.enrolledCount > 0);
+                                const totalActive = activeStats.reduce((sum, c) => sum + c.enrolledCount, 0);
+
+                                if (totalActive === 0) {
+                                    return (
+                                        <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>
+                                            No active course enrollments to display.
+                                        </div>
+                                    );
+                                }
+
+                                return (
+                                    <div style={{ 
+                                        display: 'flex', 
+                                        alignItems: 'center', 
+                                        justifyContent: 'space-around', 
+                                        gap: '2rem', 
+                                        flexWrap: 'wrap' 
+                                    }}>
+                                        {/* SVG Donut Chart */}
+                                        <div style={{ position: 'relative', width: '280px', height: '280px', flexShrink: 0 }}>
+                                            <svg viewBox="0 0 200 200" style={{ width: '100%', height: '100%' }}>
+                                                {/* Background circle */}
+                                                <circle 
+                                                    cx="100" 
+                                                    cy="100" 
+                                                    r="70" 
+                                                    fill="transparent" 
+                                                    stroke="var(--border)" 
+                                                    strokeWidth="20" 
+                                                />
+                                                <g transform="rotate(-90 100 100)">
+                                                    {(() => {
+                                                        let cumulativeOffset = 0;
+                                                        const radius = 70;
+                                                        const circumference = 2 * Math.PI * radius;
+
+                                                        return activeStats.map((item, idx) => {
+                                                            const percentage = item.enrolledCount / totalActive;
+                                                            const strokeLength = percentage * circumference;
+                                                            const strokeOffset = cumulativeOffset;
+                                                            cumulativeOffset += strokeLength;
+
+                                                            const isHovered = hoveredSlice === idx;
+                                                            const isAnyHovered = hoveredSlice !== null;
+                                                            const sliceColor = COLORS[idx % COLORS.length];
+
+                                                            return (
+                                                                <circle
+                                                                    key={idx}
+                                                                    cx="100"
+                                                                    cy="100"
+                                                                    r={radius}
+                                                                    fill="transparent"
+                                                                    stroke={sliceColor}
+                                                                    strokeWidth={isHovered ? 26 : 20}
+                                                                    strokeDasharray={`${strokeLength} ${circumference}`}
+                                                                    strokeDashoffset={-strokeOffset}
+                                                                    style={{
+                                                                        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                                                                        cursor: 'pointer',
+                                                                        opacity: isAnyHovered ? (isHovered ? 1 : 0.4) : 0.9,
+                                                                        transform: isHovered ? 'scale(1.02)' : 'scale(1)',
+                                                                        transformOrigin: 'center'
+                                                                    }}
+                                                                    onMouseEnter={() => setHoveredSlice(idx)}
+                                                                    onMouseLeave={() => setHoveredSlice(null)}
+                                                                />
+                                                            );
+                                                        });
+                                                    })()}
+                                                </g>
+                                                
+                                                {/* Center text for Donut Chart */}
+                                                <g style={{ pointerEvents: 'none' }}>
+                                                    {hoveredSlice !== null ? (
+                                                        <>
+                                                            <text 
+                                                                x="100" 
+                                                                y="85" 
+                                                                textAnchor="middle" 
+                                                                style={{ 
+                                                                    fill: 'var(--text-muted)', 
+                                                                    fontSize: '11px', 
+                                                                    fontWeight: 500,
+                                                                    letterSpacing: '0.05em',
+                                                                    textTransform: 'uppercase'
+                                                                }}
+                                                            >
+                                                                {activeStats[hoveredSlice].title.length > 15 
+                                                                    ? activeStats[hoveredSlice].title.substring(0, 15) + '...'
+                                                                    : activeStats[hoveredSlice].title
+                                                                }
+                                                            </text>
+                                                            <text 
+                                                                x="100" 
+                                                                y="110" 
+                                                                textAnchor="middle" 
+                                                                style={{ 
+                                                                    fill: 'var(--text, #0f172a)', 
+                                                                    fontSize: '22px', 
+                                                                    fontWeight: 800 
+                                                                }}
+                                                            >
+                                                                {activeStats[hoveredSlice].enrolledCount}
+                                                            </text>
+                                                            <text 
+                                                                x="100" 
+                                                                y="130" 
+                                                                textAnchor="middle" 
+                                                                style={{ 
+                                                                    fill: COLORS[hoveredSlice % COLORS.length], 
+                                                                    fontSize: '13px', 
+                                                                    fontWeight: 700 
+                                                                }}
+                                                            >
+                                                                {Math.round((activeStats[hoveredSlice].enrolledCount / totalActive) * 100)}%
+                                                            </text>
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <text 
+                                                                x="100" 
+                                                                y="90" 
+                                                                textAnchor="middle" 
+                                                                style={{ 
+                                                                    fill: 'var(--text-muted)', 
+                                                                    fontSize: '11px', 
+                                                                    fontWeight: 500,
+                                                                    letterSpacing: '0.05em',
+                                                                    textTransform: 'uppercase'
+                                                                }}
+                                                            >
+                                                                Total Enrolled
+                                                            </text>
+                                                            <text 
+                                                                x="100" 
+                                                                y="118" 
+                                                                textAnchor="middle" 
+                                                                style={{ 
+                                                                    fill: 'var(--text, #0f172a)', 
+                                                                    fontSize: '26px', 
+                                                                    fontWeight: 800 
+                                                                }}
+                                                            >
+                                                                {totalActive}
+                                                            </text>
+                                                            <text 
+                                                                x="100" 
+                                                                y="135" 
+                                                                textAnchor="middle" 
+                                                                style={{ 
+                                                                    fill: 'var(--text-muted)', 
+                                                                    fontSize: '11px',
+                                                                    fontWeight: 500
+                                                                }}
+                                                            >
+                                                                Students
+                                                            </text>
+                                                        </>
+                                                    )}
+                                                </g>
+                                            </svg>
+                                        </div>
+
+                                        {/* Legend List */}
+                                        <div style={{ 
+                                            flex: 1, 
+                                            minWidth: '250px', 
+                                            display: 'flex', 
+                                            flexDirection: 'column', 
+                                            gap: '0.75rem',
+                                            maxHeight: '280px',
+                                            overflowY: 'auto',
+                                            paddingRight: '0.5rem'
+                                        }}>
+                                            {activeStats.map((item, idx) => {
+                                                const isHovered = hoveredSlice === idx;
+                                                const isAnyHovered = hoveredSlice !== null;
+                                                const sliceColor = COLORS[idx % COLORS.length];
+                                                const pct = Math.round((item.enrolledCount / totalActive) * 100);
+
+                                                return (
+                                                    <div 
+                                                        key={idx}
+                                                        style={{ 
+                                                            display: 'flex', 
+                                                            alignItems: 'center', 
+                                                            justifyContent: 'space-between',
+                                                            padding: '0.5rem 0.75rem',
+                                                            borderRadius: '8px',
+                                                            background: isHovered ? 'var(--glass)' : 'transparent',
+                                                            transition: 'all 0.2s ease',
+                                                            cursor: 'pointer',
+                                                            opacity: isAnyHovered ? (isHovered ? 1 : 0.6) : 1,
+                                                            border: isHovered ? '1px solid var(--border)' : '1px solid transparent'
+                                                        }}
+                                                        onMouseEnter={() => setHoveredSlice(idx)}
+                                                        onMouseLeave={() => setHoveredSlice(null)}
+                                                    >
+                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', overflow: 'hidden', marginRight: '1rem' }}>
+                                                            <span style={{ 
+                                                                width: '12px', 
+                                                                height: '12px', 
+                                                                borderRadius: '50%', 
+                                                                background: sliceColor, 
+                                                                flexShrink: 0,
+                                                                boxShadow: isHovered ? `0 0 8px ${sliceColor}` : 'none',
+                                                                transition: 'all 0.2s ease'
+                                                            }} />
+                                                            <span style={{ 
+                                                                fontWeight: isHovered ? '600' : '400',
+                                                                fontSize: '0.9rem',
+                                                                color: isHovered ? 'var(--primary)' : 'var(--text)',
+                                                                overflow: 'hidden',
+                                                                textOverflow: 'ellipsis',
+                                                                whiteSpace: 'nowrap'
+                                                            }} title={item.title}>
+                                                                {item.title}
+                                                            </span>
+                                                        </div>
+                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexShrink: 0 }}>
+                                                            <span style={{ fontWeight: 600, color: 'var(--text)' }}>{item.enrolledCount}</span>
+                                                            <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', width: '35px', textAlign: 'right' }}>{pct}%</span>
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                );
+                            })()}
                         </div>
                     )}
 
